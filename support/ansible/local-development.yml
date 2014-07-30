@@ -1,0 +1,12 @@
+---
+# This playbook will set up a vagrant box for local development.
+# See the various roles (especially roles/*/tasks/main.yml) for more details.
+- hosts: vagrant
+  sudo: yes
+  roles:
+    # Standard LAMP stuff, including common Apache and PHP mods, MySQL server
+    - common
+    # Development tools. Think SASS, Git, etc.
+    - development
+    # Prepare the machine for local development
+    - local-development

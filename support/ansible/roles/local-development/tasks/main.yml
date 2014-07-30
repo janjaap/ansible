@@ -1,0 +1,49 @@
+# Turns off strict host key checking, so the provisioning doesn't stall
+- name: install ~/.ssh/config
+  copy: src=ssh-config dest={{ dev_home }}/.ssh/config force=no
+
+# Make sure the developers' ssh-key is available inside the box
+- name: adding your private key for Github access
+  copy: src={{ local_git_key }} dest={{ dev_home }}/.ssh/id_rsa force=no
+
+# Ensure that github is a known host
+- name: ensure known hosts
+  shell: touch ~/.ssh/known_hosts
+  sudo_user: vagrant
+
+- name: remove github.com from known host
+  shell: ssh-keygen -R github.com
+  sudo_user: vagrant
+
+- name: ensure github.com in known host
+  shell: ssh-keyscan -H github.com > ~/.ssh/known_hosts
+  sudo_user: vagrant
+
+- name: Install ruby packages
+  action: command bundle install chdir={{ dev_projects }}
+  sudo: no
+
+- name: Run composer (This may take some time... be patient)
+  command: composer install --no-interaction --prefer-source chdir={{ dev_projects }}
+  sudo: no
+
+- name: Install python-yaml
+  action: apt pkg=python-yaml state=installed
+
+- name: VirtualHost config
+  template: src=apache-local-dev-site.j2 dest=/etc/apache2/sites-available/local-dev-site force=no
+  notify: restart apache
+
+# Make sure the vhost is enabled
+- name: Enable IKC development vhost
+  command: a2ensite local-dev-site
+  notify: restart apache
+
+# Create database if not already present
+- name: Create database
+  mysql_db: name={{ local_db }} state=present
+  register: db_creation_result
+
+#- name: Init db content
+#  shell: mysql -uroot {{ local_db }} < /vagrant/src/db/local.sql
+#  when: dbstatus.rc ==1

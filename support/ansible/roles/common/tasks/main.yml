@@ -1,0 +1,74 @@
+# Update the repo, because most boxes are heavily outdated
+- name: Update repository
+  action: command /usr/bin/apt-get update
+
+- name: Apache
+  action: apt pkg=apache2 state=installed
+
+- name: Apache required modules
+  action: command a2enmod {{ item }}
+  notify: restart apache
+  with_items:
+    - rewrite
+    - vhost_alias
+    - headers
+    - expires
+    - filter
+    - ssl
+
+- name: Mysql Server
+  action: apt pkg=mysql-server state=installed
+  notify: restart mysql
+
+- name: python-apt
+  action: apt pkg=python-apt state=installed
+
+- name: python-pycurl
+  action: apt pkg=python-pycurl state=installed
+
+- name: make
+  action: apt pkg=make state=installed
+
+- name: Add PHP 5 repository
+  # apt_repository: repo=ppa:ondrej/php5  # php 5.5.x, requires different apache
+  apt_repository: repo=ppa:ondrej/php5-oldstable  # php 5.4.x
+
+- name: PHP core and required modules
+  action: apt pkg={{ item }} state=installed
+  notify: restart apache
+  tags: common
+  with_items:
+    - php5
+    - php5-mysql
+    - php5-xmlrpc
+    - php-soap
+    - php5-gd
+    - php-apc
+    - php5-sqlite
+    - php5-curl
+    - php5-intl
+    - php5-memcache
+    - php5-memcached
+    - php5-xdebug
+
+# Only install the client, you may want to use the DB-server on a different machine
+- name: MySQL Client only
+  action: apt pkg=mysql-client state=installed
+
+# Need this to run mysql commands via Ansible
+- name: Ensure python-mysqldb is available
+  apt: pkg=python-mysqldb state=installed
+
+# Install ACL, but you'll have to do the mount config yourself in most cases
+- name: ACL
+  action: apt pkg=acl state=installed
+
+- name: cURL
+  action: apt pkg=curl state=installed
+
+- name: Set php.ini variables
+  action: template src=etc-php5-apache2-php-ini.j2 dest=/etc/php5/apache2/php.ini force=yes
+  notify: restart apache
+
+- name: Configure xdebug
+  lineinfile: dest=/etc/php5/conf.d/20-xdebug.ini line='xdebug.max_nesting_level = 1000' regexp=".*max_nesting_level.*"

@@ -1,0 +1,5 @@
+dev_home : /home/vagrant
+dev_projects : /vagrant
+
+# Sets vhost server name (remember to update your /etc/hosts file)
+vhost_server_name: site.local.dev

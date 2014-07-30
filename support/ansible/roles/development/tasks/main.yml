@@ -1,0 +1,48 @@
+- name: Add your own key to the authorized_keys of vagrant
+  authorized_key: user=vagrant key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+- name: Install Git
+  action: apt pkg=git-core state=installed
+
+- apt: pkg=python-software-properties
+- apt_repository: repo='ppa:chris-lea/node.js'
+- apt: pkg=nodejs update_cache=yes
+
+- name: Ensure Ruby 1.8 is not present
+  action: apt pkg=ruby1.8 state=absent
+
+- name: Ensure Ruby 1.9 is present
+  action: apt pkg=ruby1.9.1-dev state=installed
+
+- name: Compass
+  action: command sudo gem install compass --pre
+
+- name: Sass-globbing
+  action: command sudo gem install sass-globbing
+
+- name: Install Bundler to handle ruby package mess
+  action: command sudo gem install bundler
+
+- name: Composer
+  shell: curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer creates=/usr/local/bin/composer
+
+- name: Postfix
+  action: apt pkg=postfix state=installed
+
+- name: Install phpMyAdmin
+  action: apt pkg=phpmyadmin state=installed
+
+- name: Set up phpMyAdmin under Apache (/phpmyadmin)
+  file: src=/etc/phpmyadmin/apache.conf dest=/etc/apache2/conf.d/phpmyadmin.conf state=link
+
+- name: Make phpmyadmin accessible without password (1st occurence)
+  lineinfile: dest=/etc/phpmyadmin/config.inc.php regexp='\/\/(.*)AllowNoPassword(.*)' line='\1AllowNoPassword\2' backrefs=yes backup=yes
+
+# This is a bit of a hack. The line appears twice, only the first really needs to be changed,
+# but Ansible picks the last one on the first pass...
+- name: Make phpmyadmin accessible without password (2nd occurence)
+  lineinfile: dest=/etc/phpmyadmin/config.inc.php regexp='\/\/(.*)AllowNoPassword(.*)' line='\1AllowNoPassword\2' backrefs=yes
+
+- name: Remove /index.html
+  file: dest=/var/www/index.html state=absent
+
