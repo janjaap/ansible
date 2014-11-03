@@ -1,0 +1,11 @@
+{
+    "name": "ansible",
+    "version": "1.0.0",
+    "dependencies": {
+        "modernizr": "~2.8.0",
+        "semicolon": "0.0.1",
+        "jquery": "2.*",
+        "picturefill": "~2.1.0",
+        "normalize-css": "~3.*",
+    }
+}
