@@ -2,11 +2,11 @@
     ServerName {{ vhost_server_name }}
 	SetEnv APP_ENV dev
 
-	DocumentRoot {{ dev_projects }}
+	DocumentRoot {{ app_root }}
 
 	AccessFileName .htaccess.dev .htaccess
 
-	<Directory {{ dev_projects }}/>
+	<Directory {{ app_root }}/>
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride All
 		Order allow,deny
