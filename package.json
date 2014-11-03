@@ -4,7 +4,7 @@
     "main": "",
     "dependencies": {},
     "devDependencies": {
-        "grunt": "*",
+        "grunt": "latest",
         "grunt-contrib-jshint": "*",
         "grunt-contrib-nodeunit": "*",
         "grunt-contrib-uglify": "*",
@@ -15,7 +15,12 @@
         "grunt-contrib-cssmin": "*",
         "grunt-contrib-copy": "*",
         "grunt-contrib-clean": "*",
-        "grunt-modernizr": "*"
+        "grunt-modernizr": "*",
+        "grunt-contrib-less": "latest",
+        "grunt-sass": "latest",
+        "grunt-devtools": "latest",
+        "grunt-contrib-imagemin": "latest",
+        "grunt-spritesmith": "latest"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"

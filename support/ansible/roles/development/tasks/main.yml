@@ -8,6 +8,12 @@
 - apt_repository: repo='ppa:chris-lea/node.js'
 - apt: pkg=nodejs update_cache=yes
 
+- name: Install bower
+  npm: name=bower global=yes
+
+- name: Install grunt
+  npm: name=grunt-cli global=yes
+
 - name: Ensure Ruby 1.8 is not present
   action: apt pkg=ruby1.8 state=absent
 

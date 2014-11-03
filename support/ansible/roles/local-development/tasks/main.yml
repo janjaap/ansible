@@ -23,6 +23,10 @@
   action: command bundle install chdir={{ dev_projects }}
   sudo: no
 
+- name: Install npm packages
+  action: command npm install chdir={{ dev_projects }}
+  sudo: no
+
 - name: Run composer (This may take some time... be patient)
   command: composer install --no-interaction --prefer-source chdir={{ dev_projects }}
   sudo: no
@@ -35,7 +39,7 @@
   notify: restart apache
 
 # Make sure the vhost is enabled
-- name: Enable IKC development vhost
+- name: Enable development vhost
   command: a2ensite local-dev-site
   notify: restart apache
 
@@ -43,6 +47,13 @@
 - name: Create database
   mysql_db: name={{ local_db }} state=present
   register: db_creation_result
+
+- name: Bower to install css and js assets
+  command: bower install chdir={{ dev_projects }}
+  sudo: no
+
+- name: Grunt to compose and minify css and js assets
+  command: grunt chdir={{ dev_projects }}
 
 #- name: Init db content
 #  shell: mysql -uroot {{ local_db }} < /vagrant/src/db/local.sql
